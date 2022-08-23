@@ -34,7 +34,7 @@ async def send_welcome(message: aiogram.types.Message):
         telegram_id=message.from_user.id,
         defaults={'name': message.from_user.full_name})
     logger.info('%s sent /start', subscriber)
-    _create_daily_job(subscriber)
+    await _create_daily_job(subscriber)
     subscriber.enabled = True
     await subscriber.save()
 
