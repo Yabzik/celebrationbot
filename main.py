@@ -58,7 +58,7 @@ async def send_off(message: aiogram.types.Message):
 @dp.message_handler(commands=['today'])
 async def send_today(message: aiogram.types.Message):
     msg = await message.reply('⏳ Ожидайте...')
-    img = await holiday_controller.get_date_prepared_image(
+    img, _ = await holiday_controller.get_date_prepared_image(
         datetime.datetime.now())
 
     await bot.delete_message(msg.chat.id, msg.message_id)
@@ -68,15 +68,15 @@ async def send_today(message: aiogram.types.Message):
 @dp.message_handler(commands=['random'])
 async def send_random(message: aiogram.types.Message):
     msg = await message.reply('⏳ Ожидайте...')
-    img = await holiday_controller.get_date_prepared_image(
+    img, day = await holiday_controller.get_date_prepared_image(
         holiday_controller._get_random_date())
 
     await bot.delete_message(msg.chat.id, msg.message_id)
-    await message.reply_photo(img)
+    await message.reply_photo(img, caption=day)
 
 
 async def _send_daily(telegram_id):
-    img = await holiday_controller.get_date_prepared_image(
+    img, _ = await holiday_controller.get_date_prepared_image(
         datetime.datetime.now())
     await bot.send_photo(telegram_id, img)
 

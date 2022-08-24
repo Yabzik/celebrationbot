@@ -69,7 +69,7 @@ class HolidayController:
                 holiday_cache.directory
             )
         )
-        return resulting_image
+        return resulting_image, holidays['day']
 
     def _get_greeting(self, holiday):
         morph = pymorphy2.MorphAnalyzer()
