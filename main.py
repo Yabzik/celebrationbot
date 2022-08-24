@@ -135,7 +135,7 @@ def start_scheduler():
     if not scheduler.get_job('updateHolidays'):
         scheduler.add_job(
             holiday_controller.update_holidays,
-            'cron', id='updateHolidays', hour=0, minute=0)
+            'cron', id='updateHolidays', hour=2, minute=0)
 
 
 if __name__ == "__main__":
