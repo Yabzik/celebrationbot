@@ -89,8 +89,8 @@ async def _create_daily_job(subscriber: db.Subscriber):
     if not scheduler.get_job(f'daily_{subscriber.telegram_id}'):
         tomorrow_datetime = datetime.datetime.now() + \
             datetime.timedelta(days=1)
-        tomorrow_datetime.replace(
-            hour=random.randint(6, 14), minute=random.randint(0, 59))
+        tomorrow_datetime = tomorrow_datetime.replace(
+            hour=random.randint(9, 17), minute=random.randint(0, 59))
         scheduler.add_job(
             _send_daily, 'date',
             id=f'daily_{subscriber.telegram_id}',
