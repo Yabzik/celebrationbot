@@ -78,11 +78,18 @@ async def send_random(message: aiogram.types.Message):
 async def _send_daily(telegram_id):
     img, _ = await holiday_controller.get_date_prepared_image(
         datetime.datetime.now())
-    await bot.send_photo(telegram_id, img)
 
-    subscriber = await db.Subscriber.get(telegram_id=telegram_id)
-    await _create_daily_job(subscriber)
-    logger.info('Sent daily card to %s', subscriber)
+    try:
+        await bot.send_photo(telegram_id, img)
+    except aiogram.utils.exceptions.BotBlocked:
+        subscriber = await db.Subscriber.get(telegram_id=telegram_id)
+        subscriber.enabled = False
+        subscriber.save()
+        logger.info('Subscriber %s blocked bot, disabling...', subscriber)
+    else:
+        subscriber = await db.Subscriber.get(telegram_id=telegram_id)
+        await _create_daily_job(subscriber)
+        logger.info('Sent daily card to %s', subscriber)
 
 
 async def _create_daily_job(subscriber: db.Subscriber):
