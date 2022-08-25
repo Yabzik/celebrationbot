@@ -38,7 +38,8 @@ class HolidayController:
     async def _filter_holidays(self, holidays):
         result = []
         for holiday in holidays:
-            if any(substring in holiday for substring in self.banned_parts):
+            if any(substring in holiday.lower() for substring
+                    in self.banned_parts):
                 self.logger.info(
                     'Found banned part in "%s", skipping',
                     holiday)
