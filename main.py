@@ -59,7 +59,7 @@ async def send_off(message: aiogram.types.Message):
 async def send_today(message: aiogram.types.Message):
     msg = await message.reply('⏳ Ожидайте...')
     img, _ = await holiday_controller.get_date_prepared_image(
-        datetime.datetime.now())
+        datetime.date.today())
 
     await bot.delete_message(msg.chat.id, msg.message_id)
     await message.reply_photo(img)
@@ -77,7 +77,7 @@ async def send_random(message: aiogram.types.Message):
 
 async def _send_daily(telegram_id):
     img, _ = await holiday_controller.get_date_prepared_image(
-        datetime.datetime.now())
+        datetime.date.today())
 
     try:
         await bot.send_photo(telegram_id, img)
@@ -149,5 +149,6 @@ if __name__ == "__main__":
     run_async(run())
     start_scheduler()
     run_async(process_subscribers())
-    # asyncio.get_event_loop().run_forever()
-    aiogram.executor.start_polling(dp, skip_updates=True)
+    import asyncio
+    asyncio.get_event_loop().run_forever()
+    # aiogram.executor.start_polling(dp, skip_updates=True)

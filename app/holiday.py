@@ -82,10 +82,10 @@ class HolidayController:
         # try to get a date
         try:
             return datetime.datetime.strptime(
-                '{} {}'.format(random.randint(1, 366), year), '%j %Y')
+                '{} {}'.format(random.randint(1, 366), year), '%j %Y').date()
         # if the value happens to be in the leap year range, try again
         except ValueError:
-            self.get_random_date()
+            return self.get_random_date()
 
     def _text_wrap(self, text, font, max_width):
         lines = []
@@ -165,7 +165,7 @@ class HolidayController:
             content = f.read()
             return self._draw_greeting_card(content, greeting)
 
-    async def get_date_holidays(self, date):
+    async def get_date_holidays(self, date: datetime.date):
         async with aiohttp.ClientSession() as session:
             url = 'https://www.calend.ru/day/'
             url += f'{date.year}-{date.month}-{date.day}'
@@ -187,7 +187,7 @@ class HolidayController:
                     }
 
     async def update_holidays(self):
-        self.today = await self.get_date_holidays(datetime.datetime.now())
+        self.today = await self.get_date_holidays(datetime.date.today())
 
         self.logger.info(
             'Updated today holidays (%s): %s',
