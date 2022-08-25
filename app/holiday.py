@@ -123,8 +123,8 @@ class HolidayController:
         overlay = Image.open(overlay_path.resolve())
         ow, oh = overlay.size
 
-        ow = random.randint(0, ow)
-        oh = random.randint(0, oh)
+        ow = random.randint(10, ow)
+        oh = random.randint(10, oh)
         overlay = overlay.resize((ow, oh))
 
         bw, bh = background.size
