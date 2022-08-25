@@ -149,6 +149,6 @@ if __name__ == "__main__":
     run_async(run())
     start_scheduler()
     run_async(process_subscribers())
-    import asyncio
-    asyncio.get_event_loop().run_forever()
-    # aiogram.executor.start_polling(dp, skip_updates=True)
+    # import asyncio
+    # asyncio.get_event_loop().run_forever()
+    aiogram.executor.start_polling(dp, skip_updates=True)
