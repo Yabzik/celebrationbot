@@ -11,7 +11,8 @@
         },
         {
             "name": "Celebration Bot API",
-            "script": "-m uvicorn api:app --port=3002",
+            "script": "api:app",
+            "args": ["-m", "uvicorn", "--port", "3002"],
             "instances": "1",
             "wait_ready": true,
             "autorestart": true,
