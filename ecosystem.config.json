@@ -12,7 +12,7 @@
         {
             "name": "Celebration Bot API",
             "script": "/usr/bin/bash",
-            "args": ["-c", "./.venv/bin/python3 -m uvicorn api:app"],
+            "args": "-c ./.venv/bin/python3 -m uvicorn api:app",
             "instances": "1",
             "wait_ready": true,
             "autorestart": true,
