@@ -36,13 +36,19 @@ app = FastAPI(
 
 
 async def process_query(image_query: db.ImageQuery):
-    image = await holiday_controller.get_prepared_image_by_query(
-        image_query.query)
-    await holiday_controller._save_query_to_file(
-        f'{image_query.uuid}.png', image)
+    try:
+        image = await holiday_controller.get_prepared_image_by_query(
+            image_query.query)
+        await holiday_controller._save_query_to_file(
+            f'{image_query.uuid}.png', image)
 
-    image_query.ready = True
-    await image_query.save()
+        image_query.ready = True
+        await image_query.save()
+    except Exception:
+        if image_query.retries < 5:
+            image_query.retries += 1
+
+            return await process_query(image_query)
 
 
 @app.get(
@@ -127,7 +133,8 @@ async def get_query_status(
     return {
         'id': query.uuid,
         'query': query.query,
-        'ready': query.ready
+        'ready': query.ready,
+        'error': (query.retries >= 5)
     }
 
 

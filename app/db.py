@@ -36,6 +36,7 @@ class ImageQuery(Model):
     query = fields.TextField()
     uuid = fields.UUIDField(default=uuid.uuid4)
     ready = fields.BooleanField(default=False)
+    retries = fields.IntField(default=0)
     updated_at = fields.DatetimeField(auto_now=True)
     created_at = fields.DatetimeField(auto_now_add=True)
 
