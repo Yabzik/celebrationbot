@@ -47,6 +47,7 @@ async def process_query(image_query: db.ImageQuery):
     except Exception:
         if image_query.retries < 5:
             image_query.retries += 1
+            await image_query.save()
 
             return await process_query(image_query)
 
