@@ -1,11 +1,22 @@
 {
-    "apps": [{
-        "name": "Celebration Bot",
-        "script": "main.py",
-        "instances": "1",
-        "wait_ready": true,
-        "autorestart": true,
-        "max_restarts": 5,
-        "interpreter" : "./.venv/bin/python3"
-    }]
+    "apps": [
+        {
+            "name": "Celebration Bot",
+            "script": "main.py",
+            "instances": "1",
+            "wait_ready": true,
+            "autorestart": true,
+            "max_restarts": 5,
+            "interpreter" : "./.venv/bin/python3"
+        },
+        {
+            "name": "Celebration Bot API",
+            "script": "main.py",
+            "instances": "1",
+            "wait_ready": true,
+            "autorestart": true,
+            "max_restarts": 5,
+            "interpreter" : "./.venv/bin/python3 -m uvicorn api:app --port=3002"
+        }
+    ]
 }

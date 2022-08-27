@@ -29,3 +29,15 @@ class HolidayCache(Model):
 
     class Meta:
         table = "holiday_cache"
+
+
+class ImageQuery(Model):
+    id = fields.IntField(pk=True)
+    query = fields.TextField()
+    uuid = fields.UUIDField(default=uuid.uuid4)
+    ready = fields.BooleanField(default=False)
+    updated_at = fields.DatetimeField(auto_now=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    class Meta:
+        table = "image_queries"

@@ -4,6 +4,7 @@ import lxml.html
 import datetime
 import random
 import io
+import aiofiles
 
 from PIL import Image, ImageFont, ImageDraw
 
@@ -60,6 +61,21 @@ class HolidayController:
             holiday_cache.images_count = images_count
             await holiday_cache.save()
 
+        await self._get_prepared_image(holiday_cache), holidays['day']
+
+    async def get_prepared_image_by_query(self, query):
+        holiday_cache, _ = await HolidayCache.get_or_create(name=query)
+        holiday_cache.accessed_at = tortoise.timezone.now()
+        await holiday_cache.save()
+
+        if holiday_cache.images_count <= 0:
+            images_count = await self.download_images(holiday_cache, 5)
+            holiday_cache.images_count = images_count
+            await holiday_cache.save()
+
+        return await self._get_prepared_image(holiday_cache)
+
+    async def _get_prepared_image(self, holiday_cache):
         loop = asyncio.get_event_loop()
         thread_pool = ThreadPoolExecutor()
         resulting_image = await loop.run_in_executor(
@@ -70,7 +86,7 @@ class HolidayController:
                 holiday_cache.directory
             )
         )
-        return resulting_image, holidays['day']
+        return resulting_image
 
     def _get_greeting(self, holiday):
         morph = pymorphy2.MorphAnalyzer()
@@ -233,3 +249,19 @@ class HolidayController:
         )
 
         return len(list(path.glob('*')))
+
+    async def _save_query_to_file(self, filename, data):
+        path = Path("./cache/queries")
+        path.mkdir(parents=True, exist_ok=True)
+
+        filepath = path / filename
+        async with aiofiles.open(filepath, 'wb') as f:
+            await f.write(data)
+
+    async def _read_query_from_file(self, filename):
+        path = Path("./cache/queries")
+        path.mkdir(parents=True, exist_ok=True)
+
+        filepath = path / filename
+        async with aiofiles.open(filepath, 'rb') as f:
+            return await f.read()
