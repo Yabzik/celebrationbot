@@ -61,7 +61,7 @@ class HolidayController:
             holiday_cache.images_count = images_count
             await holiday_cache.save()
 
-        await self._get_prepared_image(holiday_cache), holidays['day']
+        return (await self._get_prepared_image(holiday_cache)), holidays['day']
 
     async def get_prepared_image_by_query(self, query):
         holiday_cache, _ = await HolidayCache.get_or_create(name=query)
