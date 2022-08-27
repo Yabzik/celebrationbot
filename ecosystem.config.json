@@ -11,12 +11,12 @@
         },
         {
             "name": "Celebration Bot API",
-            "script": "main.py",
+            "script": "-m uvicorn api:app --port=3002",
             "instances": "1",
             "wait_ready": true,
             "autorestart": true,
             "max_restarts": 5,
-            "interpreter" : "./.venv/bin/python3 -m uvicorn api:app --port=3002"
+            "interpreter" : "./.venv/bin/python3"
         }
     ]
 }
