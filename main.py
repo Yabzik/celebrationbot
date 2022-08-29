@@ -84,7 +84,7 @@ async def _send_daily(telegram_id):
     except aiogram.utils.exceptions.BotBlocked:
         subscriber = await db.Subscriber.get(telegram_id=telegram_id)
         subscriber.enabled = False
-        subscriber.save()
+        await subscriber.save()
         logger.info('Subscriber %s blocked bot, disabling...', subscriber)
     else:
         subscriber = await db.Subscriber.get(telegram_id=telegram_id)
