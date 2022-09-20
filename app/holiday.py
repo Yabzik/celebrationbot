@@ -42,8 +42,7 @@ class HolidayController:
             if any(substring in holiday.lower() for substring
                     in self.banned_parts):
                 self.logger.info(
-                    'Found banned part in "%s", skipping',
-                    holiday)
+                    f'Found banned part in "{holiday}", skipping')
             else:
                 result.append(holiday)
         return result
@@ -206,8 +205,8 @@ class HolidayController:
         self.today = await self.get_date_holidays(datetime.date.today())
 
         self.logger.info(
-            'Updated today holidays (%s): %s',
-            self.today['day'], str(self.today['holidays']))
+            f'Updated today holidays ({self.today["day"]}): '
+            f'{str(self.today["holidays"])}')
 
         for holiday in self.today['holidays']:
             holiday_cache, _ = await HolidayCache.get_or_create(name=holiday)
@@ -222,6 +221,8 @@ class HolidayController:
     async def download_images(self, holiday_cache: HolidayCache, count=20):
         loop = asyncio.get_event_loop()
         thread_pool = ThreadPoolExecutor()
+
+        self.logger.info(f'Downloading images for: {holiday_cache.name}')
 
         downloaded_count = await loop.run_in_executor(
             thread_pool,

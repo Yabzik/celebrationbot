@@ -33,7 +33,7 @@ async def send_welcome(message: aiogram.types.Message):
     subscriber, _ = await db.Subscriber.get_or_create(
         telegram_id=message.from_user.id,
         defaults={'name': message.from_user.full_name})
-    logger.info('%s sent /start', subscriber)
+    logger.info(f'{subscriber} sent /start')
     await _create_daily_job(subscriber)
     subscriber.enabled = True
     await subscriber.save()
@@ -50,7 +50,7 @@ async def send_off(message: aiogram.types.Message):
             scheduler.remove_job(f'daily_{subscriber.telegram_id}')
 
         await message.reply('Отключил рассылку!')
-        logger.info('%s disabled subscription', subscriber)
+        logger.info(f'{subscriber} disabled subscription')
     else:
         await message.reply('Рассылка уже отключена!')
 
@@ -85,11 +85,11 @@ async def _send_daily(telegram_id):
         subscriber = await db.Subscriber.get(telegram_id=telegram_id)
         subscriber.enabled = False
         await subscriber.save()
-        logger.info('Subscriber %s blocked bot, disabling...', subscriber)
+        logger.info(f'Subscriber {subscriber} blocked bot, disabling...')
     else:
         subscriber = await db.Subscriber.get(telegram_id=telegram_id)
         await _create_daily_job(subscriber)
-        logger.info('Sent daily card to %s', subscriber)
+        logger.info(f'Sent daily card to {subscriber}')
 
 
 async def _create_daily_job(subscriber: db.Subscriber):
