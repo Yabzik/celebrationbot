@@ -24,6 +24,7 @@ bot = aiogram.Bot(token=os.getenv('TG_TOKEN'))
 dp = aiogram.Dispatcher(bot)
 
 
+@logger.catch
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: aiogram.types.Message):
     await message.reply(('Привет! Теперь каждый день я '
@@ -39,6 +40,7 @@ async def send_welcome(message: aiogram.types.Message):
     await subscriber.save()
 
 
+@logger.catch
 @dp.message_handler(commands=['off'])
 async def send_off(message: aiogram.types.Message):
     subscriber = await db.Subscriber.get(telegram_id=message.from_user.id)
@@ -55,6 +57,7 @@ async def send_off(message: aiogram.types.Message):
         await message.reply('Рассылка уже отключена!')
 
 
+@logger.catch
 @dp.message_handler(commands=['today'])
 async def send_today(message: aiogram.types.Message):
     msg = await message.reply('⏳ Ожидайте...')
@@ -65,6 +68,7 @@ async def send_today(message: aiogram.types.Message):
     await message.reply_photo(img)
 
 
+@logger.catch
 @dp.message_handler(commands=['random'])
 async def send_random(message: aiogram.types.Message):
     msg = await message.reply('⏳ Ожидайте...')
@@ -75,6 +79,7 @@ async def send_random(message: aiogram.types.Message):
     await message.reply_photo(img, caption=day)
 
 
+@logger.catch
 async def _send_daily(telegram_id):
     img, _ = await holiday_controller.get_date_prepared_image(
         datetime.date.today())
@@ -92,6 +97,7 @@ async def _send_daily(telegram_id):
         logger.info(f'Sent daily card to {subscriber}')
 
 
+@logger.catch
 async def _create_daily_job(subscriber: db.Subscriber):
     if not scheduler.get_job(f'daily_{subscriber.telegram_id}'):
         tomorrow_datetime = datetime.datetime.now() + \
