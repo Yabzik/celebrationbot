@@ -81,16 +81,22 @@ async def send_random(message: aiogram.types.Message):
 
 @logger.catch
 async def _send_daily(telegram_id):
-    img, _ = await holiday_controller.get_date_prepared_image(
-        datetime.date.today())
-
     try:
+        img, _ = await holiday_controller.get_date_prepared_image(
+            datetime.date.today())
         await bot.send_photo(telegram_id, img)
     except aiogram.utils.exceptions.BotBlocked:
         subscriber = await db.Subscriber.get(telegram_id=telegram_id)
         subscriber.enabled = False
         await subscriber.save()
         logger.info(f'Subscriber {subscriber} blocked bot, disabling...')
+    except Exception:
+        subscriber = await db.Subscriber.get(telegram_id=telegram_id)
+        logger.error(f'Failed sending daily card to {subscriber}...')
+        scheduler.add_job(
+            _send_daily, 'date',
+            run_date=(datetime.datetime.now() + datetime.timedelta(minutes=5)),
+            args=[subscriber.telegram_id])
     else:
         subscriber = await db.Subscriber.get(telegram_id=telegram_id)
         await _create_daily_job(subscriber)
@@ -110,6 +116,7 @@ async def _create_daily_job(subscriber: db.Subscriber):
             run_date=tomorrow_datetime, args=[subscriber.telegram_id])
 
 
+@logger.catch
 async def run():
     await Tortoise.init(db_url=os.getenv('DB_URL'), modules={"models": [db]})
     await Tortoise.generate_schemas()
