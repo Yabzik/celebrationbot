@@ -99,6 +99,7 @@ async def _send_daily(telegram_id):
             args=[subscriber.telegram_id])
     else:
         subscriber = await db.Subscriber.get(telegram_id=telegram_id)
+        logger.debug(f'Creating daily job for {subscriber}')
         await _create_daily_job(subscriber)
         logger.info(f'Sent daily card to {subscriber}')
 
@@ -114,6 +115,11 @@ async def _create_daily_job(subscriber: db.Subscriber):
             _send_daily, 'date',
             id=f'daily_{subscriber.telegram_id}',
             run_date=tomorrow_datetime, args=[subscriber.telegram_id])
+
+        logger.debug(f'Created daily job for {subscriber} '
+                     f'({tomorrow_datetime})')
+    else:
+        logger.debug(f'Scheduler job exists for {subscriber}')
 
 
 @logger.catch

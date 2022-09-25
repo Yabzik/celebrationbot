@@ -22,8 +22,8 @@ handler = NotificationHandler('telegram', defaults=params)
 if not os.path.exists('logs'):
     os.makedirs('logs')
 
-logger.add("logs/app.log", rotation="1 day")
-logger.add(handler, level="ERROR")
+logger.add("logs/app.log", rotation="1 day", level=os.getenv('LOGGING_LEVEL'))
+logger.add(handler, level=os.getenv('LOGGING_NOTIFY_LEVEL'))
 
 
 def get_logger(logger_name):

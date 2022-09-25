@@ -11,6 +11,13 @@ from tortoise.contrib.fastapi import register_tortoise
 import os
 from dotenv import load_dotenv
 
+from loguru import logger
+
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+logger.add("logs/api.log", rotation="1 day")
+
 load_dotenv()
 
 holiday_controller = holiday.HolidayController()
@@ -37,6 +44,9 @@ app = FastAPI(
 
 async def process_query(image_query: db.ImageQuery):
     try:
+        logger.info(f'Background processing query "{image_query.query}" '
+                    f'[{image_query.uuid}]')
+
         image = await holiday_controller.get_prepared_image_by_query(
             image_query.query)
         await holiday_controller._save_query_to_file(
