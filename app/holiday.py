@@ -214,9 +214,12 @@ class HolidayController:
             await holiday_cache.save()
 
             if holiday_cache.images_count <= 0:
-                images_count = await self.download_images(holiday_cache)
-                holiday_cache.images_count = images_count
-                await holiday_cache.save()
+                try:
+                    images_count = await self.download_images(holiday_cache)
+                    holiday_cache.images_count = images_count
+                    await holiday_cache.save()
+                except Exception:
+                    self.logger.exception(f'Failed to download images for {holiday_cache.name}')
 
     async def download_images(self, holiday_cache: HolidayCache, count=20):
         loop = asyncio.get_event_loop()
