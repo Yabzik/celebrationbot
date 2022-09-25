@@ -219,7 +219,8 @@ class HolidayController:
                     holiday_cache.images_count = images_count
                     await holiday_cache.save()
                 except Exception:
-                    self.logger.exception(f'Failed to download images for {holiday_cache.name}')
+                    self.logger.exception(f'Failed to download images '
+                                          f'for {holiday_cache.name}')
 
     async def download_images(self, holiday_cache: HolidayCache, count=20):
         loop = asyncio.get_event_loop()
@@ -242,17 +243,22 @@ class HolidayController:
         path = Path(f"./cache/{path_suffix}")
         path.mkdir(parents=True, exist_ok=True)
 
-        self.downloader.download(
-            {
-                'keywords': str(holiday_title),
-                'limit': int(count),
-                'output_directory': 'cache',
-                'image_directory': str(path_suffix),
-                'silent_mode': True
-            }
-        )
-
-        return len(list(path.glob('*')))
+        try:
+            self.downloader.download(
+                {
+                    'keywords': str(holiday_title),
+                    'limit': int(count),
+                    'output_directory': 'cache',
+                    'image_directory': str(path_suffix),
+                    'silent_mode': True
+                }
+            )
+            return len(list(path.glob('*')))
+        except Exception:
+            self.logger.exception(f'Failed to download images '
+                                  f'for {holiday_title}')
+            return 0
+        
 
     async def _save_query_to_file(self, filename, data):
         path = Path("./cache/queries")
