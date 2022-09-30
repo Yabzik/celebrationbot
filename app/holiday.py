@@ -23,6 +23,8 @@ import tortoise
 
 import app.log
 
+from app.scrapers.wombo import WomboScraper
+
 import os
 from dotenv import load_dotenv
 
@@ -222,43 +224,44 @@ class HolidayController:
                     self.logger.exception(f'Failed to download images '
                                           f'for {holiday_cache.name}')
 
-    async def download_images(self, holiday_cache: HolidayCache, count=20):
-        loop = asyncio.get_event_loop()
-        thread_pool = ThreadPoolExecutor()
+    async def download_images(self, holiday_cache: HolidayCache, count=10):
+        # loop = asyncio.get_event_loop()
+        # thread_pool = ThreadPoolExecutor()
 
         self.logger.info(f'Downloading images for: {holiday_cache.name}')
 
-        downloaded_count = await loop.run_in_executor(
-            thread_pool,
-            partial(
-                self._download_images_sync,
-                holiday_cache.name,
-                holiday_cache.directory,
-                count
-            )
-        )
-        return downloaded_count
+        return await WomboScraper().download_images(holiday_cache, count)
 
-    def _download_images_sync(self, holiday_title, path_suffix, count):
-        path = Path(f"./cache/{path_suffix}")
-        path.mkdir(parents=True, exist_ok=True)
+        # downloaded_count = await loop.run_in_executor(
+        #     thread_pool,
+        #     partial(
+        #         self._download_images_sync,
+        #         holiday_cache.name,
+        #         holiday_cache.directory,
+        #         count
+        #     )
+        # )
+        # return downloaded_count
 
-        try:
-            self.downloader.download(
-                {
-                    'keywords': str(holiday_title),
-                    'limit': int(count),
-                    'output_directory': 'cache',
-                    'image_directory': str(path_suffix),
-                    'silent_mode': True
-                }
-            )
-            return len(list(path.glob('*')))
-        except Exception:
-            self.logger.exception(f'Failed to download images '
-                                  f'for {holiday_title}')
-            return 0
-        
+    # def _download_images_sync(self, holiday_title, path_suffix, count):
+    #     path = Path(f"./cache/{path_suffix}")
+    #     path.mkdir(parents=True, exist_ok=True)
+
+    #     try:
+    #         self.downloader.download(
+    #             {
+    #                 'keywords': str(holiday_title),
+    #                 'limit': int(count),
+    #                 'output_directory': 'cache',
+    #                 'image_directory': str(path_suffix),
+    #                 'silent_mode': True
+    #             }
+    #         )
+    #         return len(list(path.glob('*')))
+    #     except Exception:
+    #         self.logger.exception(f'Failed to download images '
+    #                               f'for {holiday_title}')
+    #         return 0
 
     async def _save_query_to_file(self, filename, data):
         path = Path("./cache/queries")
