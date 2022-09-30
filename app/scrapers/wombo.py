@@ -27,20 +27,12 @@ class WomboScraper(Scraper):
 
             wombo_styles = await self.get_wombo_styles(session)
 
-            coros = []
-            for _ in range(count):
-                coros.append(self.get_url_from_wombo(
+            for i in range(count):
+                url = await self.get_url_from_wombo(
                     session, holiday_cache.name,
-                    random.choice(wombo_styles)['id']))
+                    random.choice(wombo_styles)['id'])
 
-            urls = await asyncio.gather(*coros)
-
-            dl_coros = []
-            for idx, x in enumerate(urls):
-                dl_coros.append(
-                    self.save_file(session, x, path / f'{idx}.jpg'))
-
-            await asyncio.gather(*dl_coros)
+                await self.save_file(session, url, path / f'{i}.jpg')
 
         return len(list(path.glob('*')))
 
