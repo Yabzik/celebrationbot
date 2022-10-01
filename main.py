@@ -130,6 +130,11 @@ async def run():
     await holiday_controller.update_holidays()
 
 
+@logger.catch
+async def _update_holidays():
+    await holiday_controller.update_holidays()
+
+
 async def process_subscribers():
     enabled_subscribers = await db.Subscriber.filter(enabled=True)
     for subscriber in enabled_subscribers:
@@ -160,8 +165,8 @@ def start_scheduler():
 
     if not scheduler.get_job('updateHolidays'):
         scheduler.add_job(
-            holiday_controller.update_holidays,
-            'cron', id='updateHolidays', hour=2, minute=0)
+            _update_holidays,
+            'cron', id='updateHolidays', hour=3, minute=0)
 
 
 if __name__ == "__main__":
